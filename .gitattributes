@@ -1,0 +1,16 @@
+# 預設：文字檔，不自動轉換換行
+* -text
+
+# UTF-16 語言檔：git 內部存 UTF-8（diff 看得到中文），取出時還原成 UTF-16 給程式讀
+machines/*/Language/*.ini      text working-tree-encoding=UTF-16LE-BOM eol=crlf
+machines/*/PLCIni/Name_*.ini   text working-tree-encoding=UTF-16LE-BOM eol=crlf
+
+# PLC.ini / Ex-PLC.ini / Sys-PLC.ini：編碼不一 (Big5/UTF-8/ASCII)，原樣保存
+machines/*/PLCIni/*PLC.ini     -text diff
+
+*.csv  text eol=crlf
+*.md   text eol=lf
+*.py   text eol=lf
+tools/hooks/*  text eol=lf
+*.bat  text eol=crlf
+*.xlsx binary
