@@ -1,10 +1,10 @@
-# GAM-Language
+# GAMLanguage
 
 全機種語言檔與警報碼。**永遠使用最新版**，舊機台使用新語言包可相容。
 
 ## 第一次使用
 ```
-git clone <repo網址> C:\Program1\GAM320AT\Language
+git clone https://github.com/guomengnick/GAMLanguage.git C:\Program1\GAM320AT\Language
 cd C:\Program1\GAM320AT\Language
 setup.bat
 ```
