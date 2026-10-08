@@ -1,0 +1,6 @@
+#!/bin/sh
+# commit 前自動執行：CSV 有改 -> 重新產生 MD 並一起 commit
+if git diff --cached --name-only | grep -q '^data/.*\.csv$'; then
+  python tools/csv2md.py || exit 1
+  git add docs/*.md
+fi
