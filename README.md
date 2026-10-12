@@ -7,16 +7,11 @@
 
 ## 一、第一次使用（每台電腦做一次）
 
-1. 先關閉 GAM 程式，把舊資料夾改名備份：
-   `C:\Program1\GAM320AT\Language` → `Language_old`
-2. 下載：
-   ```
-   git clone https://github.com/guomengnick/GAMLanguage.git C:\Program1\GAM320AT\Language
-   ```
-3. 執行資料夾裡的 **`setup.bat`**（啟用自動檢查，只要做一次）
-4. 開程式確認語言正常後，即可刪除 `Language_old`
-
-> 用 GitHub Desktop、TortoiseGit 等工具 clone 也可以，步驟 3 一樣要做。
+只要下載一次，沒有其他設定：
+```
+git clone https://github.com/guomengnick/GAMLanguage.git C:\Program1\GAM320AT\GAMLanguage
+```
+> 用 GitHub Desktop、TortoiseGit 等工具 clone 也可以。以下指令都在這個資料夾裡執行。
 
 ---
 
@@ -47,7 +42,8 @@ git pull
 1. `git pull`
 2. 用 Excel 開 `data\alarm-codes.csv` 修改
 3. 存檔時選 **「CSV UTF-8（逗號分隔）」**
-4. commit → push（`docs\alarm-codes.md` 會自動一起更新，不用管它）
+4. commit → push
+5. 約 1 分鐘後，GitHub 會自動多一筆「由 CSV 自動更新 MD」的 commit（`docs\alarm-codes.md`），不用管它，下次記得先 `git pull`
 
 ### 查警報碼
 直接在 GitHub 上看 **[docs/alarm-codes.md](docs/alarm-codes.md)**，可用 Ctrl+F 搜尋。
@@ -85,16 +81,24 @@ GitHub 上打開該檔案 → 右上角 **History**；或按 **Blame** 看每一
 | 再建 `Backup\日期` 資料夾 | git 就是備份，所有舊版本都可以從 History 找回 |
 | 把 Excel 存成一般 CSV | 會變成 Big5，中文亂碼 |
 
-### 有兩道自動檢查
-1. **commit 時**（要先執行過 `setup.bat`）：語言檔編碼錯誤 → commit 失敗並顯示是哪個檔案
-2. **push 到 GitHub 後**（Actions）：同樣的檢查，加上 MD 是否和 CSV 一致；失敗時 GitHub 上該 commit 會顯示紅色 ✗
+### GitHub 自動檢查
+每次 push 後，GitHub 會自動（約 1 分鐘）：
+1. 檢查所有語言檔編碼 → 有問題時該 commit 顯示**紅色 ✗**，點進去可看到是哪個檔案
+2. 警報碼 CSV 有改 → 自動產生 MD 並 commit
+
+push 後到 GitHub 首頁看一下 commit 旁邊是綠色 ✓ 就好。
 
 ---
 
 ## 四、常見問題
 
-**Q：commit 出現「語言檔編碼錯誤，必須存成 UTF-16 LE」**
-用記事本打開該檔案 → 另存新檔 → 編碼選「UTF-16 LE」→ 覆蓋存檔 → 重新 commit。
+**Q：GitHub 顯示紅色 ✗「語言檔編碼錯誤，必須存成 UTF-16 LE」**
+該檔案在 git 裡已經變亂碼，要從原始內容修復：
+1. 從自己電腦的備份或 bin 裡找回該檔案正確的內容
+2. 用記事本打開 → 另存新檔 → 編碼選「UTF-16 LE」→ 覆蓋 repo 裡的檔案
+3. commit → push，確認變回綠色 ✓
+
+不確定怎麼處理時，**先不要再改其他東西**，請熟 git 的同事協助（可用 `git revert` 回到上一版）。
 
 **Q：pull 時出現衝突（conflict）**
 代表你和別人改到同一行。打開檔案找 `<<<<<<<` 標記，保留正確的內容並刪除標記，存檔後 commit。不確定的話先找改的人討論。
@@ -114,7 +118,7 @@ machines/<機種>/Language/  介面與訊息語言檔（UTF-16 LE）
 machines/<機種>/PLCIni/    PLC 參數（PLC.ini 等）與參數名稱（Name_*.ini，UTF-16 LE）
 data/alarm-codes.csv       警報碼主檔（改這個）
 docs/alarm-codes.md        自動產生，勿手改
-tools/                     轉換、檢查腳本與 git hook
-setup.bat                  第一次使用執行
-deploy.bat                 部署到機台
+tools/                     轉換、檢查腳本（GitHub 自動執行）
+.github/workflows/         GitHub 自動檢查設定
+deploy.bat                 部署到機台 / bin
 ```

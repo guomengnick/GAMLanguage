@@ -1,6 +1,10 @@
-# push 到 GitHub 後自動檢查（同事沒執行 setup.bat 也會被擋下）
+# push 到 GitHub 後自動執行：
+#   1. 檢查語言檔編碼（存成 UTF-8/ANSI 會整檔變亂碼）
+#   2. 警報碼 CSV 有改 -> 自動產生 docs/*.md 並 commit 回 main
 name: check
 on: [push, pull_request]
+permissions:
+  contents: write
 jobs:
   check:
     runs-on: windows-latest
@@ -8,8 +12,15 @@ jobs:
       - uses: actions/checkout@v4
       - name: 語言檔編碼
         run: python tools/check_ini.py
-      - name: 警報碼 MD 是否與 CSV 一致
+      - name: 警報碼 MD 自動產生
         shell: bash
         run: |
           python tools/csv2md.py
-          git diff --exit-code docs/ || { echo "docs/*.md 與 CSV 不一致：請執行 python tools/csv2md.py 後再 commit"; exit 1; }
+          if git diff --quiet docs/; then echo "MD 已是最新"; exit 0; fi
+          if [ "${{ github.event_name }}" != "push" ] || [ "${{ github.ref }}" != "refs/heads/main" ]; then
+            echo "docs/*.md 與 CSV 不一致（合併到 main 後會自動更新）"; exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "<docs>[警報碼][slight] 由 CSV 自動更新 MD"
+          git push
