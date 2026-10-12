@@ -2,6 +2,7 @@
 import csv, sys
 from pathlib import Path
 import openpyxl
+sys.stdout.reconfigure(encoding="utf-8")   # GitHub Actions 主控台非 UTF-8，印中文會當掉
 
 ws = openpyxl.load_workbook(sys.argv[1], data_only=True).worksheets[0]
 rows = [["" if v is None else str(v) for v in r] for r in ws.iter_rows(values_only=True)]

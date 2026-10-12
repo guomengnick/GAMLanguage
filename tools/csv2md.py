@@ -1,6 +1,8 @@
 """data/*.csv -> docs/*.md（自動產生，請勿手改 MD）"""
 import csv
 from pathlib import Path
+import sys
+sys.stdout.reconfigure(encoding="utf-8")   # GitHub Actions 主控台非 UTF-8，印中文會當掉
 
 root = Path(__file__).parent.parent
 for src in sorted((root / "data").glob("*.csv")):

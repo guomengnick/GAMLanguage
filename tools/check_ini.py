@@ -2,6 +2,7 @@
 用法：python tools/check_ini.py [檔案...]   不給檔案 = 檢查全部"""
 import sys
 from pathlib import Path, PurePosixPath
+sys.stdout.reconfigure(encoding="utf-8")   # GitHub Actions 主控台非 UTF-8，印中文會當掉
 
 PATTERNS = ("machines/*/Language/*.ini", "machines/*/PLCIni/Name_*.ini")
 
