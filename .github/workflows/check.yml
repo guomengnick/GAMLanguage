@@ -1,0 +1,15 @@
+# push 到 GitHub 後自動檢查（同事沒執行 setup.bat 也會被擋下）
+name: check
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 語言檔編碼
+        run: python tools/check_ini.py
+      - name: 警報碼 MD 是否與 CSV 一致
+        shell: bash
+        run: |
+          python tools/csv2md.py
+          git diff --exit-code docs/ || { echo "docs/*.md 與 CSV 不一致：請執行 python tools/csv2md.py 後再 commit"; exit 1; }

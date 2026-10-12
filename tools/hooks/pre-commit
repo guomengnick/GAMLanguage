@@ -1,5 +1,8 @@
 #!/bin/sh
-# commit 前自動執行：CSV 有改 -> 重新產生 MD 並一起 commit
+# commit 前自動執行
+# 1. 檢查語言檔編碼（存成 UTF-8 會讓整個檔案變亂碼）
+git diff --cached --name-only --diff-filter=ACMR | xargs -r python tools/check_ini.py || exit 1
+# 2. CSV 有改 -> 重新產生 MD 並一起 commit
 if git diff --cached --name-only | grep -q '^data/.*\.csv$'; then
   python tools/csv2md.py || exit 1
   git add docs/*.md

@@ -14,3 +14,4 @@ machines/*/PLCIni/*PLC.ini     -text diff
 tools/hooks/*  text eol=lf
 *.bat  text eol=crlf
 *.xlsx binary
+.github/workflows/*  text eol=lf
