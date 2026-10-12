@@ -58,6 +58,15 @@ deploy.bat GAM386AT D:\Release\GAM386AT
 ```
 會把該機種的 `Language`、`PLCIni` 複製到指定資料夾（exe 所在處）。
 
+### 開發時更新 bin 的語言檔
+本 repo 和 Gam320 程式 repo **完全獨立**：Gam320 的 pull、切分支都不會動到語言檔，要拿新語言檔必須在這裡另外 `git pull`。
+```
+git pull
+deploy.bat GAM300AT C:\Program1\GAM320AT\bin
+```
+> ⚠ deploy 會**覆蓋** bin 裡的語言檔。在 bin 裡改過的翻譯，請先改回本 repo 再 commit。
+> 程式遇到新表單時會自動把該段文字寫進 bin 裡的 ini，這些內容要複製回本 repo 才會保留。
+
 ### 新增機種
 複製一個最接近的機種資料夾，改名後修改內容，commit → push。
 
