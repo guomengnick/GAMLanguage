@@ -25,15 +25,36 @@ git pull
 
 ### 改翻譯（介面、訊息）
 1. `git pull`
-2. 打開 `machines\<機種>\Language\` 裡的檔案修改，直接存檔
-   | 檔案 | 內容 |
-   |---|---|
-   | `Cht.ini` / `Chs.ini` / `English.ini` | 介面文字：繁中 / 簡中 / 英文 |
-   | `Message_Cht.ini` / `Message_Chs.ini` / `Message_Eng.ini` | 訊息文字 |
-   | `Other_1.ini` / `Other_2.ini`、`Message_Other_*.ini` | 其他語言 |
+2. 找到檔案修改，直接存檔
+   | 位置 | 檔案 | 內容 |
+   |---|---|---|
+   | `common\Language\`（**銑刀機種共用**） | `Cht.ini` / `Chs.ini` / `English.ini` / `Other_1.ini` / `Other_2.ini` | 介面文字、程式訊息 `[Get_Msg]`：繁中 / 簡中 / 英文 / 其他語言 |
+   | `machines\<機種>\Language\` | `Message_Cht.ini` / `Message_Chs.ini` / `Message_Eng.ini` / `Message_Other_*.ini` | 編號訊息（`Msg_1`…）、警報、PLC 訊號 |
 3. commit（訊息寫清楚改了什麼，例如 `GAM386AT 修正切割Y軸中文名稱`）→ push
 
-> 一次只改需要的機種。多個機種要改同一句話，就每個機種的檔案都改，一起 commit。
+> 銑刀機種的介面文字只有一份，改 `common\Language\` 就是全部一起改。
+> 例外：**雷射機 GAM390 是獨立的產品線，不和銑刀機種共用**。`machines\GAM390\Language\` 放它自己完整的介面檔，部署時不使用 `common`；GAM390 的內容（例如訊息 290 以後、雷射專用表單）**不要補到銑刀機種**。
+> 編號訊息檔是每個機種各一份。銑刀機種要改同一句話，就每個機種的檔案都改，一起 commit；新的訊息請改用 `[Get_Msg]`。
+
+### 新增程式訊息（`[Get_Msg]`）
+程式裡寫 `Get_Msg(L"確認復歸?")`，文字放在 `common\Language\` 5 個介面檔最後的 `[Get_Msg]` 段落，**銑刀機種共用，不用編號**：
+```ini
+; Cht.ini
+[Get_Msg]
+確認復歸?=確認復歸?
+確認復歸? msg=確認復歸?\n若確認復歸請確認安全門......
+
+; English.ini（Other_1.ini、Other_2.ini 同英文）
+[Get_Msg]
+確認復歸?=Confirm homing?
+確認復歸? msg=Confirm homing?\nPlease make sure the safety door......
+```
+- 左邊是 key，就是程式裡寫的字；短句直接用原文，長句取一個好認的短名（例如加 ` msg`）
+- **Cht.ini 一定要加**；其他語言還沒翻譯時，畫面會先顯示繁中，Cht.ini 也沒有時直接顯示 key
+- key 不能有半形 `=`、不能用 `;` 或 `[` 開頭；前後空白不算；英文字母不分大小寫；換行寫成 `\n`
+- 程式裡的 key 要和 ini 一字不差，打錯不會當掉，只會直接顯示 key
+- 程式少了 `L`（`Get_Msg("確認復歸?")`）會編譯失敗，不會跑出亂碼
+- GAM390（雷射）要用的話，加在它自己的 `machines\GAM390\Language\Cht.ini` 等檔案
 
 ### 改 PLC 參數名稱
 `machines\<機種>\PLCIni\Name_TW.ini` / `Name_CN.ini` / `Name_EN.ini`，流程同上。
@@ -52,7 +73,7 @@ git pull
 ```
 deploy.bat GAM386AT D:\Release\GAM386AT
 ```
-會把該機種的 `Language`、`PLCIni` 複製到指定資料夾（exe 所在處）。
+會把共用的 `common\Language` 和該機種的 `Language`、`PLCIni` 複製到指定資料夾（exe 所在處）。機種資料夾裡有自己的 `Cht.ini`（GAM390）就是獨立機種，不複製 `common`。
 
 ### 開發時更新 bin 的語言檔
 本 repo 和 Gam320 程式 repo **完全獨立**：Gam320 的 pull、切分支都不會動到語言檔，要拿新語言檔必須在這裡另外 `git pull`。
@@ -61,10 +82,10 @@ git pull
 deploy.bat GAM300AT C:\Program1\GAM320AT\bin
 ```
 > ⚠ deploy 會**覆蓋** bin 裡的語言檔。在 bin 裡改過的翻譯，請先改回本 repo 再 commit。
-> 程式遇到新表單時會自動把該段文字寫進 bin 裡的 ini，這些內容要複製回本 repo 才會保留。
+> 程式遇到新表單時會自動把該段文字寫進 bin 裡的 ini，這些內容要複製回本 repo 的 `common\Language\` 才會保留。
 
 ### 新增機種
-複製一個最接近的機種資料夾，改名後修改內容，commit → push。
+複製一個最接近的機種資料夾，改名後修改內容，commit → push。銑刀機種的介面文字用 `common` 的，不用複製；不和銑刀共用的產品線（例如雷射），才在機種的 `Language\` 放自己完整的 `Cht.ini` 等檔案。
 
 ### 查誰改過某個檔案
 GitHub 上打開該檔案 → 右上角 **History**；或按 **Blame** 看每一行是誰改的。
@@ -114,7 +135,8 @@ GitHub 上打開該檔案 → History → 點選要看的 commit。GAM300AT 的�
 
 ## 結構
 ```
-machines/<機種>/Language/  介面與訊息語言檔（UTF-16 LE）
+common/Language/           銑刀機種共用的介面語言檔，含程式訊息 [Get_Msg]（UTF-16 LE）
+machines/<機種>/Language/  機種的編號訊息語言檔（UTF-16 LE）；GAM390（雷射）另有自己完整的介面語言檔
 machines/<機種>/PLCIni/    PLC 參數（PLC.ini 等）與參數名稱（Name_*.ini，UTF-16 LE）
 data/alarm-codes.csv       警報碼主檔（改這個）
 docs/alarm-codes.md        自動產生，勿手改

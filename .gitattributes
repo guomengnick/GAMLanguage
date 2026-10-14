@@ -2,6 +2,7 @@
 * -text
 
 # UTF-16 語言檔：git 內部存 UTF-8（diff 看得到中文），取出時還原成 UTF-16 給程式讀
+common/Language/*.ini          text working-tree-encoding=UTF-16LE-BOM eol=crlf
 machines/*/Language/*.ini      text working-tree-encoding=UTF-16LE-BOM eol=crlf
 machines/*/PLCIni/Name_*.ini   text working-tree-encoding=UTF-16LE-BOM eol=crlf
 

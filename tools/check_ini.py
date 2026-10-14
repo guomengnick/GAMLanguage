@@ -4,7 +4,7 @@ import sys
 from pathlib import Path, PurePosixPath
 sys.stdout.reconfigure(encoding="utf-8")   # GitHub Actions 主控台非 UTF-8，印中文會當掉
 
-PATTERNS = ("machines/*/Language/*.ini", "machines/*/PLCIni/Name_*.ini")
+PATTERNS = ("common/Language/*.ini", "machines/*/Language/*.ini", "machines/*/PLCIni/Name_*.ini")
 
 def is_utf16_path(p: str) -> bool:
     return any(PurePosixPath(p.replace("\\", "/")).match(pat) for pat in PATTERNS)
